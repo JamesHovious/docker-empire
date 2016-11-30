@@ -12,5 +12,5 @@ RUN wget `curl -s https://api.github.com/repos/adaptivethreat/Empire/releases | 
 RUN tar zxvf /root/empire.tar --strip-components=1 -C /root/empire
 ENV STAGING_KEY=$RANDOM
 RUN bash -c "cd /root/empire/setup && /root/empire/setup/install.sh"
-RUN chmod +x /root/launch.sh
+RUN chmod +x /root/start_empire.sh
 CMD ["/root/start_empire.sh"]

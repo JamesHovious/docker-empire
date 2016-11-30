@@ -1,3 +1,3 @@
 #!/bin/bash
 cd /root/empire
-./empire
+./empire --headless

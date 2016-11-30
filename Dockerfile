@@ -7,11 +7,11 @@ RUN apt-get -y update && apt-get -y dist-upgrade && apt-get clean && apt-get -y 
 RUN apt-get -y install python git python-pip libssl-dev libffi-dev python-dev python-m2crypto swig lsb-release
 RUN pip install pyopenssl
 RUN mkdir /root/empire
-ADD launch.sh /root/
+ADD start_empire.sh /root/
 RUN wget `curl -s https://api.github.com/repos/adaptivethreat/Empire/releases | grep tarball_url | head -n 1 | cut -d '"' -f 4` -O /root/empire.zip
 RUN mkdir /root/empire
 RUN tar zxvf empire.tar --strip-components=1 -C /root/empire
 ENV STAGING_KEY=$RANDOM
 RUN bash -c "cd /root/empire/setup && /root/empire/setup/install.sh"
 RUN chmod +x /root/launch.sh
-CMD ["/root/launch.sh"]
+CMD ["/root/start_empire.sh"]

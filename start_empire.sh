@@ -1,3 +1,3 @@
 #!/bin/bash
 cd /root/empire
-./empire --headless
+./empire --headless --username $USERNAME --password $PASSWORD

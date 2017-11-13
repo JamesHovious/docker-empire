@@ -1,5 +1,5 @@
 FROM kalilinux/kali-linux-docker
-MAINTAINER @JasmesHovious
+MAINTAINER @JamesHovious
 # Setup OS repos
 RUN echo "deb http://http.kali.org/kali kali-rolling main contrib non-free" > /etc/apt/sources.list && \
 echo "deb-src http://http.kali.org/kali kali-rolling main contrib non-free" >> /etc/apt/sources.list

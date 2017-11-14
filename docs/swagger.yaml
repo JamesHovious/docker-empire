@@ -41,7 +41,7 @@ paths:
           type: string
       responses:
         '200':
-          description: returns the current Empire version
+          description: Returns the current Empire version
           schema:
             type: array
             items:
@@ -73,7 +73,7 @@ paths:
       parameters:
         - in: body
           name: API Credentials
-          description: The username and password for the API
+          description: The username and password for the API.
           schema:
             type: object
             required:
@@ -85,10 +85,10 @@ paths:
                 example: empireadmin
               password:
                 type: string
-                example: empirePASSWORD
+                example: Password123!
       responses:
         '200':
-          description: Returns the current listener options for the specified type.
+          description: Logs into the API and gets the current session token.
           schema:
                 type: array
                 items:
@@ -104,7 +104,7 @@ paths:
           type: string
       responses:
         '200':
-          description: Returns the current Empire configuration.
+          description: Gets the permanent session token, reusable without login. Doesn't change on API restart.
           schema:
                 type: array
                 items:
@@ -173,11 +173,48 @@ paths:
           type: string
       responses:
         '200':
-          description: Returns all current Empire listeners.
+          description: Returns the listener specifed by the name/id listenerName.
           schema:
                 type: array
                 items:
                   $ref: '#/definitions/ListenerItem'
+    post:
+      tags:
+          - Listeners
+      parameters:
+        - in: path
+          name: listenerName
+          type: string
+          required: true
+          description: The type of listener
+        - in: body
+          name: Name
+          description: The name of the listener
+          schema:
+            type: object
+            required:
+              - Name
+              - StagingKey
+            properties:
+              Name:
+                type: string
+                description: Name for the listener.
+                example: testing
+              StagingKey:
+                type: string
+                description: Key used to set up the agent's session.
+                example: someKeyString
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description:  Creates a listener with the specified parameters.
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/CreateListenerItem'
     delete:
       tags:
           - Listeners
@@ -209,7 +246,7 @@ paths:
             type: string
         responses:
           '200':
-            description: Returns all current Empire listeners.
+            description: Kills the listener specifed by the name/id listenerName.
             schema:
                   type: array
                   items:
@@ -235,42 +272,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/definitions/ListenerOptionsItem'
-  /api/listeners/{listenerType}:
-    post:
-      tags:
-          - Listeners
-      parameters:
-        - in: path
-          name: listenerType
-          type: string
-          required: true
-          description: The type of listener
-        - in: body
-          name: Name
-          description: The name of the listener
-          schema:
-            type: object
-            required:
-              - Name
-              - StagingKey
-            properties:
-              Name:
-                type: string
-                example: testing
-              StagingKey:
-                type: string
-                example: someKeyString
-        - in: query
-          name: token
-          description: The API token used for authenticated API resources.
-          type: string
-      responses:
-        '200':
-          description: Returns the current listener options for the specified type.
-          schema:
-                type: array
-                items:
-                  $ref: '#/definitions/CreateListenerItem'
   /api/stagers:
     get:
       tags:
@@ -293,7 +294,7 @@ paths:
       parameters:
         - in: body
           name: Stager Attributes
-          description: Generates a new stager
+          description: Generates a new stager.
           schema:
             type: object
             required:
@@ -310,7 +311,7 @@ paths:
           type: string
       responses:
         '200':
-          description: Returns the Empire stager specified by parameters
+          description: Returns the Empire stager specified by parameters.
           schema:
                 type: array
                 items:
@@ -331,7 +332,7 @@ paths:
           type: string
       responses:
         '200':
-          description: Returns the Empire stager specified by stagerName
+          description: Returns the Empire stager specified by stagerName.
           schema:
                 type: array
                 items:
@@ -399,7 +400,7 @@ paths:
           type: string
       responses:
         '200':
-          description: Returns the agent specifed by agentName
+          description: Returns the agent specifed by agentName.
           schema:
                 type: array
                 items:
@@ -451,7 +452,7 @@ paths:
           type: string
       responses:
         '200':
-          description: Tasks the agent specifed by agentName to run the given shell 
+          description: Tasks the agent specifed by agentName to run the given shell.
           schema:
                 type: array
                 items:
@@ -770,7 +771,7 @@ paths:
           type: string
       responses:
         '200':
-          description:  Returns all credentials currently stored in an Empire server.
+          description:  Returns all logged events.
           schema:
                 type: array
                 items:
@@ -791,7 +792,7 @@ paths:
           type: string
       responses:
         '200':
-          description:  Returns the module specified by moduleName.
+          description:  Returns the events for a specified agentName.
           schema:
                 type: array
                 items:
@@ -812,7 +813,7 @@ paths:
           type: string
       responses:
         '200':
-          description:  Returns the module specified by moduleName.
+          description:  Returns the events of a specified msgType (checkin, task, result).
           schema:
                 type: array
                 items:
@@ -833,7 +834,7 @@ paths:
           type: string
       responses:
         '200':
-          description:  Returns the module specified by moduleName.
+          description:  Returns the events matching a specific msg.
           schema:
                 type: array
                 items:
@@ -1274,6 +1275,7 @@ definitions:
           "staging_key": "m@T%L?VH...",
           "version": "1.5.0"
           }
+
 schemes:
  - https
 # Added by API Auto Mocking Plugin

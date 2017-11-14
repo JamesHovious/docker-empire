@@ -1274,10 +1274,8 @@ definitions:
           "staging_key": "m@T%L?VH...",
           "version": "1.5.0"
           }
-host: 95.85.40.176:1337
-basePath: /
 schemes:
  - https
 # Added by API Auto Mocking Plugin
-#host: virtserver.swaggerhub.com
-#basePath: /jhov/Empire-Swagger2.0/1.0.0
+host: virtserver.swaggerhub.com
+basePath: /jhov/Empire-Swagger2.0/1.0.0

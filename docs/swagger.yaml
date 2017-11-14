@@ -1,0 +1,1283 @@
+swagger: '2.0'
+info:
+  description: Swagger 2.0 documentation for Empire
+  version: 1.0.0
+  title: Empire REST API
+  license:
+    name: BSD 3-clause
+    url: https://github.com/EmpireProject/Empire/blob/master/LICENSE
+
+# tags are used for organizing operations
+tags:
+- name: Authentication
+  description: Authenticate to the Empire API
+- name: Version
+  description: Get the API version
+- name: Admin
+  description: Administrative functions
+- name: Configuration
+  description: Configure Empire agent/C2 settings
+- name: Listeners
+  description: Manage Empire listeners
+- name: Stagers
+  description: Manage Empire stagers
+- name: Agents
+  description: Manage Empire agents
+- name: Modules
+  description: Search and execute Empire modules
+- name: Credentials
+  description: Audit the credentials stored by Empire
+- name: Reporting
+  description: Get a logged data from Empire
+paths:
+  /api/version:
+    get:
+      tags:
+        - Version
+      parameters:
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description: returns the current Empire version
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/VersionItem'
+        '400':
+          description: bad input parameter
+  /api/config:
+    get:
+      tags:
+        - Configuration
+      parameters:
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description: Returns the current Empire configuration.
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/ConfigItem'
+        '400':
+          description: bad input parameter
+  /api/admin/login:
+    post:
+      tags:
+          - Authentication
+      parameters:
+        - in: body
+          name: API Credentials
+          description: The username and password for the API
+          schema:
+            type: object
+            required:
+              - username
+              - password
+            properties:
+              username:
+                type: string
+                example: empireadmin
+              password:
+                type: string
+                example: empirePASSWORD
+      responses:
+        '200':
+          description: Returns the current listener options for the specified type.
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/TokenItem'
+  /api/admin/permanenttoken:
+    get:
+      tags:
+        - Admin
+      parameters:
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description: Returns the current Empire configuration.
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/TokenItem'
+  /api/admin/restart:
+    get:
+      tags:
+        - Admin
+      parameters:
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description: Restarts the RESTful API server.
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/StatusItem'
+  /api/admin/shutdown:
+    get:
+      tags:
+        - Admin
+      parameters:
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description: Shutdown the RESTful API server.
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/StatusItem'
+  /api/listeners:
+    get:
+      tags:
+        - Listeners
+      parameters:
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description: Returns all current Empire listeners.
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/ListenerItem'
+  /api/listeners/{listenerName}:
+    get:
+      tags:
+          - Listeners
+      parameters:
+        - in: path
+          name: listenerName
+          type: string
+          required: true
+          description: Name of the listener you want to query.
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description: Returns all current Empire listeners.
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/ListenerItem'
+    delete:
+      tags:
+          - Listeners
+      parameters:
+        - in: path
+          name: listenerName
+          type: string
+          required: true
+          description: Name of the listener you want to query.
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description: Returns all current Empire listeners.
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/StatusItem'
+  /api/listeners/all:
+      delete:
+        tags:
+            - Listeners
+        parameters:
+          - in: query
+            name: token
+            description: The API token used for authenticated API resources.
+            type: string
+        responses:
+          '200':
+            description: Returns all current Empire listeners.
+            schema:
+                  type: array
+                  items:
+                    $ref: '#/definitions/StatusItem'
+  /api/listeners/options/{listenerType}:
+    get:
+      tags:
+          - Listeners
+      parameters:
+        - in: path
+          name: listenerType
+          type: string
+          required: true
+          description: The type of listener
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description: Returns the current listener options for the specified type.
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/ListenerOptionsItem'
+  /api/listeners/{listenerType}:
+    post:
+      tags:
+          - Listeners
+      parameters:
+        - in: path
+          name: listenerType
+          type: string
+          required: true
+          description: The type of listener
+        - in: body
+          name: Name
+          description: The name of the listener
+          schema:
+            type: object
+            required:
+              - Name
+              - StagingKey
+            properties:
+              Name:
+                type: string
+                example: testing
+              StagingKey:
+                type: string
+                example: someKeyString
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description: Returns the current listener options for the specified type.
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/CreateListenerItem'
+  /api/stagers:
+    get:
+      tags:
+        - Stagers
+      parameters:
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description: Returns all current Empire stagers.
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/StagerItem'
+    post:
+      tags:
+          - Stagers
+      parameters:
+        - in: body
+          name: Stager Attributes
+          description: Generates a new stager
+          schema:
+            type: object
+            required:
+              - StagerName
+              - Listener
+            properties:
+              StagerName:
+                type: string
+              Listener:
+                type: string
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description: Returns the Empire stager specified by parameters
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/NewStagerItem'
+  /api/stagers/{stagerName}:
+    get:
+      tags:
+          - Stagers
+      parameters:
+        - in: path
+          name: stagerName
+          type: string
+          required: true
+          description: Name of the stager you want to query.
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description: Returns the Empire stager specified by stagerName
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/StagerItem'
+  /api/agents:
+    get:
+      tags:
+        - Agents
+      parameters:
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description: Returns all current Empire agents.
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/AgentsItem'
+  /api/agents/stale:
+    get:
+      tags:
+        - Agents
+      parameters:
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description: Returns all 'stale' Empire agents (past checkin window).
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/AgentsItem'
+    delete:
+      tags:
+        - Agents
+      parameters:
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description: Removes all 'stale' Empire agents (past checkin window).
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/StatusItem'
+  /api/agents/{agentName}:
+    get:
+      tags:
+          - Agents
+      parameters:
+        - in: path
+          name: agentName
+          type: string
+          required: true
+          description: Name of the agent you want to query.
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description: Returns the agent specifed by agentName
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/AgentsItem'
+    delete:
+      tags:
+          - Agents
+      parameters:
+        - in: path
+          name: agentName
+          type: string
+          required: true
+          description: Name of the agent you want to query.
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description:  Removes the agent specifed by agentName (doesn't kill first).
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/StatusItem'
+  /api/agents/{agentName}/shell:
+    post:
+      tags:
+          - Agents
+      parameters:
+        - in: body
+          name: Command
+          description: The shell command to task the agents to run.
+          schema:
+            type: object
+            required:
+              - command
+            properties:
+              command:
+                type: string
+                example: pwd
+        - in: path
+          name: agentName
+          type: string
+          required: true
+          description: Name of the agent you want to query.
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description: Tasks the agent specifed by agentName to run the given shell 
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/StatusItem'
+  /api/agents/all/shell:
+    post:
+      tags:
+          - Agents
+      parameters:
+        - in: body
+          name: Command
+          description: The shell command to task the agents to run.
+          schema:
+            type: object
+            required:
+              - command
+            properties:
+              command:
+                type: string
+                example: pwd
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description: Tasks all agents to run the given shell command.
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/StatusItem'
+  /api/agents/{agentName}/results:
+    get:
+      tags:
+        - Agents
+      parameters:
+        - in: path
+          name: agentName
+          type: string
+          required: true
+          description: Name of the agent you want to query.
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description: Retrieves results for the agent specifed by agentName.
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/AgentsResultsItem'
+    delete:
+      tags:
+        - Agents
+      parameters:
+        - in: path
+          name: agentName
+          type: string
+          required: true
+          description: Name of the agent you want to query.
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description: Retrieves results for the agent specifed by agentName.
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/StatusItem'
+  /api/agents/all/results:
+    delete:
+      tags:
+        - Agents
+      parameters:
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description: Retrieves results for the agent specifed by agentName.
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/StatusItem'
+  /api/agents/{agentName}/clear:
+    get:
+      tags:
+        - Agents
+      parameters:
+        - in: path
+          name: agentName
+          type: string
+          required: true
+          description: Name of the agent you want to query.
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description: Clears the queued taskings for the agent specified by agentName.
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/StatusItem'
+    post:
+      tags:
+        - Agents
+      parameters:
+        - in: path
+          name: agentName
+          type: string
+          required: true
+          description: Name of the agent you want to query.
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description: Clears the queued taskings for the agent specified by agentName.
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/StatusItem'
+  /api/agents/{agentName}/kill:
+    get:
+      tags:
+        - Agents
+      parameters:
+        - in: path
+          name: agentName
+          type: string
+          required: true
+          description: Name of the agent you want to query.
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description: Tasks the agent specified by agentName to exit.
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/StatusItem'
+    post:
+      tags:
+        - Agents
+      parameters:
+        - in: path
+          name: agentName
+          type: string
+          required: true
+          description: Name of the agent you want to query.
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description: Tasks the agent specified by agentName to exit.
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/StatusItem'
+  /api/agents/all/kill:
+    get:
+      tags:
+        - Agents
+      parameters:
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description: Tasks all agents to exit.
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/StatusItem'
+    post:
+      tags:
+        - Agents
+      parameters:
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description: Tasks all agents to exit.
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/StatusItem'
+  /api/modules:
+    get:
+      tags:
+        - Modules
+      parameters:
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description: Returns all current Empire modules.
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/ModuleItem'
+  /api/modules/{moduleName}:
+    get:
+      tags:
+        - Modules
+      parameters:
+        - in: path
+          name: moduleName
+          type: string
+          required: true
+          description: Name of the module you want to query.
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description:  Returns the module specified by moduleName.
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/ModuleItem'
+    post:
+      tags:
+          - Modules
+      parameters:
+        - in: body
+          name: moduleName
+          description: The agent to task the module for.
+          schema:
+            type: object
+            required:
+              - Agent
+            properties:
+              Agent:
+                type: string
+                example: WTN1LHHRYHFWHXU3
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description: Tasks all agents to run the given shell command.
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/ModuleMessageItem'
+  /api/modules/search:
+    post:
+      tags:
+          - Modules
+      parameters:
+        - in: body
+          name: Term
+          description: The term to search for.
+          schema:
+            type: object
+            required:
+              - term
+            properties:
+              term:
+                type: string
+                example: keylogger
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description: Tasks all agents to run the given shell command.
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/ModuleItem'
+  /api/creds:
+    get:
+      tags:
+        - Credentials
+      parameters:
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description:  Returns all credentials currently stored in an Empire server.
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/CredentialItem'
+  /api/reporting:
+    get:
+      tags:
+        - Reporting
+      parameters:
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description:  Returns all credentials currently stored in an Empire server.
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/ReportingItem'
+  /api/reporting/agent/{agentName}:
+    get:
+      tags:
+        - Reporting
+      parameters:
+        - in: path
+          name: agentName
+          type: string
+          required: true
+          description: Name of the agent you want to query.
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description:  Returns the module specified by moduleName.
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/ReportingItem'
+  /api/reporting/type/{msgType}:
+    get:
+      tags:
+        - Reporting
+      parameters:
+        - in: path
+          name: msgType
+          type: string
+          required: true
+          description: Type of event you want to query.
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description:  Returns the module specified by moduleName.
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/ReportingItem'
+  /api/reporting/msg/{msg}:
+    get:
+      tags:
+        - Modules
+      parameters:
+        - in: path
+          name: msg
+          type: string
+          required: true
+          description: The message you want to query.
+        - in: query
+          name: token
+          description: The API token used for authenticated API resources.
+          type: string
+      responses:
+        '200':
+          description:  Returns the module specified by moduleName.
+          schema:
+                type: array
+                items:
+                  $ref: '#/definitions/ReportingItem'
+definitions:
+  ReportingItem:
+    type: object
+    properties:
+      reporting:
+        type: object
+        example: [
+          {
+            "ID": 1,
+            "agentname": "3GHZPWEGADMT2KPA",
+            "event_type": "checkin",
+            "message": "2016-03-31 17:36:34",
+            "timestamp": "2016-03-31 17:36:34"
+          }
+        ]
+  CredentialItem:
+    type: object
+    properties:
+      creds:
+        type: object
+        example: [
+          {
+            "ID": 1,
+            "credtype": "hash",
+            "domain": "testlab.local",
+            "host": "WINDOWS1",
+            "notes": "2016-03-31 17:37:23",
+            "password": "2b576acbe6b...",
+            "sid": "S-1-5-21-664317401-282805101-...",
+            "username": "Administrator"
+          },
+        ]
+  ModuleMessageItem:
+    type: object
+    properties:
+      msg:
+        type: string
+        example: tasked agent WTN1LHHRYHFWHXU3 to run module credentials/mimikatz/logonpasswords
+      success:
+        type: boolean
+        example: true
+  ModuleItem:
+    type: object
+    properties:
+      modules:
+        type: object
+        example: [
+          {
+            "Author": [
+              "@xorrior"
+            ],
+            "Background": true,
+            "Comments": [
+              "https://github.com/xorrior/RandomPS-Scripts/blob/master/Get-FoxDump.ps1",
+              "http://xakfor.net/threads/c-firefox-36-password-cookie-recovery.12192/"
+            ],
+            "Description": "This module will dump any saved passwords from Firefox to the console. This should work for any versionof Firefox above version 32. This will only be successful if the master password is blank or has not been set.",
+            "MinPSVersion": "2",
+            "Name": "collection/FoxDump",
+            "NeedsAdmin": false,
+            "OpsecSafe": true,
+            "OutputExtension": null,
+            "SaveOutput": false,
+            "options": {
+              "Agent": {
+                "Description": "Agent to run the module on.",
+                "Required": true,
+                "Value": ""
+              },
+              "OutFile": {
+                "Description": "Path to Output File",
+                "Required": false,
+                "Value": ""
+              }
+            }
+          },
+        ]
+  AgentsResultsItem:
+    type: object
+    properties:
+      results:
+        type: object
+        example: [
+          {
+            "agentname": "CXPLDTZCKFNT3SLT",
+            "results": "WINDOWS1\\user\nPath"
+          }
+        ]
+  AgentsItem:
+    type: object
+    properties:
+      agents:
+        type: object
+        example: [
+          {
+            "ID": 1,
+            "checkin_time": "2016-03-31 17:36:34",
+            "children": null,
+            "delay": 5,
+            "external_ip": "192.168.52.200",
+            "functions": null,
+            "headers": "",
+            "high_integrity": 0,
+            "hostname": "WINDOWS1",
+            "internal_ip": "192.168.52.200",
+            "jitter": 0.0,
+            "kill_date": "",
+            "lastseen_time": "2016-03-31 17:38:55",
+            "listener": "http://192.168.52.172:8080/",
+            "lost_limit": 60,
+            "name": "3GHZPWEGADMT2KPA",
+            "old_uris": null,
+            "os_details": "Microsoft Windows 7 Professional ",
+            "parent": null,
+            "process_id": "1636",
+            "process_name": "powershell",
+            "ps_version": "2",
+            "results": "",
+            "servers": null,
+            "sessionID": "3GHZPWEGADMT2KPA",
+            "session_key": "7.+...",
+            "taskings": "",
+            "uris": "/admin/get.php,/news.asp,/login/process.jsp",
+            "user_agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko",
+            "username": "WINDOWS1\\user",
+            "working_hours": ""
+          },
+        ]
+  NewStagerItem:
+    type: object
+    properties:
+      launcher:
+        type: object
+        properties:
+          Base64:
+            type: object
+            properties:
+              Description:
+                type: string
+                example: Switch. Base64 encode the output.
+              Required:
+                type: boolean
+                example: true
+              Value:
+                type: string
+                example: "True"
+          Listener:
+            type: object
+            properties:
+              Description:
+                type: string
+                example: Listener to generate stager for.
+              Required:
+                type: boolean
+                example: true
+              Value:
+                type: string
+                example: "testing"
+          OutFile:
+            type: object
+            properties:
+              Description:
+                type: string
+                example: File to output launcher to, otherwise displayed on the screen.
+              Required:
+                type: boolean
+                example: true
+              Value:
+                type: string
+                example: ""
+          Output:
+            type: string
+            example: "powershell.exe -NoP -sta -NonI -W Hidden -Enc JAB...KQA="
+          Proxy:
+            type: object
+            properties:
+              Description:
+                type: string
+                example: "Proxy to use for request (default, none, or other)."
+              Required:
+                type: boolean
+                example: true
+              Value:
+                type: string
+                example: "default"
+          ProxyCreds:
+            type: object
+            properties:
+              Description:
+                type: string
+                example: "Proxy credentials ([domain\\]username:password) to use for request (default, none, or other)."
+              Required:
+                type: boolean
+                example: true
+              Value:
+                type: string
+                example: "default"
+          StagerRetries:
+            type: object
+            properties:
+              Description:
+                type: string
+                example: "Times for the stager to retry connecting."
+              Required:
+                type: boolean
+                example: true
+              Value:
+                type: string
+                example: "0"
+          UserAgent:
+            type: object
+            properties:
+              Description:
+                type: string
+                example: "User-agent string to use for the staging request (default, none, or other)."
+              Required:
+                type: boolean
+                example: true
+              Value:
+                type: string
+                example: "default"
+  CreateListenerItem:
+    type: object
+    properties:
+      msg:
+        type: string
+        example: listener 'testing' successfully started.
+      success:
+        type: boolean
+        example: true
+  ListenerOptionsItem:
+    type: object
+    properties:
+      listeneroptions:
+        type: object
+        example: {
+        "CertPath": {
+          "Description": "Certificate path for https listeners.",
+          "Required": false,
+          "Value": ""
+        },
+        "DefaultDelay": {
+          "Description": "Agent delay/reach back interval (in seconds).",
+          "Required": true,
+          "Value": 5
+        },
+        "DefaultJitter": {
+          "Description": "Jitter in agent reachback interval (0.0-1.0).",
+          "Required": true,
+          "Value": 0.0
+        },
+        "DefaultLostLimit": {
+          "Description": "Number of missed checkins before exiting",
+          "Required": true,
+          "Value": 60
+        },
+        "DefaultProfile": {
+          "Description": "Default communication profile for the agent.",
+          "Required": true,
+          "Value": "/admin/get.php,/news.asp,/login/process.jsp|Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko"
+        },
+        "Host": {
+          "Description": "Hostname/IP for staging.",
+          "Required": true,
+          "Value": "http://192.168.52.173:8080"
+        },
+        "KillDate": {
+          "Description": "Date for the listener to exit (MM/dd/yyyy).",
+          "Required": false,
+          "Value": ""
+        },
+        "Name": {
+          "Description": "Listener name.",
+          "Required": true,
+          "Value": "test"
+        },
+        "Port": {
+          "Description": "Port for the listener.",
+          "Required": true,
+          "Value": "8080"
+        },
+        "RedirectTarget": {
+          "Description": "Listener target to redirect to for pivot/hop.",
+          "Required": false,
+          "Value": ""
+        },
+        "StagingKey": {
+          "Description": "Staging key for initial agent negotiation.",
+          "Required": true,
+          "Value": "m@T%L..."
+        },
+        "Type": {
+          "Description": "Listener type (native, pivot, hop, foreign, meter).",
+          "Required": true,
+          "Value": "native"
+        },
+        "WorkingHours": {
+          "Description": "Hours for the agent to operate (09:00-17:00).",
+          "Required": false,
+          "Value": ""
+        }
+      }
+  StatusItem:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+  TokenItem:
+    type: object
+    properties:
+      token:
+        type: string
+        example: 'ks23jlvdki4fj1j23w39h0h0xcuwjrqilocxd6b5'
+  VersionItem:
+    type: object
+    required:
+      - token
+    properties:
+      token:
+          type: string
+          example: ks23jlvdki4fj1j23w39h0h0xcuwjrqilocxd6b5
+      version: 
+        type: string
+        example: '1.5.0'
+  StagerItem:
+    type: object
+    required:
+      - token
+    properties:
+      token:
+          type: string
+          example: ks23jlvdki4fj1j23w39h0h0xcuwjrqilocxd6b5
+      stagers:
+        type: object
+        example: {
+        "Author": [
+          "@harmj0y"
+        ],
+        "Comments": [
+          ""
+        ],
+        "Description": "Generates a ducky script that runes a one-liner stage0 launcher for Empire.",
+        "Name": "ducky",
+        "options": {
+            "Listener": {
+              "Description": "Listener to generate stager for.",
+              "Required": true,
+              "Value": ""
+            },
+            "OutFile": {
+              "Description": "File to output duckyscript to.",
+              "Required": true,
+              "Value": ""
+            },
+            "Proxy": {
+              "Description": "Proxy to use for request (default, none, or other).",
+              "Required": false,
+              "Value": "default"
+            },
+            "ProxyCreds": {
+              "Description": "Proxy credentials ([domain\\]username:password) to use for request (default, none, or other).",
+              "Required": false,
+              "Value": "default"
+            },
+            "StagerRetries": {
+              "Description": "Times for the stager to retry connecting.",
+              "Required": false,
+              "Value": "0"
+            },
+            "UserAgent": {
+              "Description": "User-agent string to use for the staging request (default, none, or other).",
+              "Required": false,
+              "Value": "default"
+            }
+          }
+        }
+  ListenerItem:
+    type: object
+    required:
+      - token
+    properties:
+      token:
+          type: string
+          example: ks23jlvdki4fj1j23w39h0h0xcuwjrqilocxd6b5
+      listeners:
+        type: object
+        example: {
+          "ID": 1,
+          "cert_path": "",
+          "default_delay": 5,
+          "default_jitter": 0.0,
+          "default_lost_limit": 60,
+          "default_profile": "/admin/get.php,/news.asp,/login/process.jsp|Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko",
+          "host": "http://192.168.52.172:8080",
+          "kill_date": "",
+          "listener_type": "native",
+          "name": "test",
+          "port": 8080,
+          "redirect_target": "",
+          "staging_key": "m@T%L?V...",
+          "working_hours": ""
+        }
+  ConfigItem:
+    type: object
+    required:
+      - token
+    properties:
+      token:
+          type: string
+          example: ks23jlvdki4fj1j23w39h0h0xcuwjrqilocxd6b5
+      config:
+        type: object
+        example: {
+          "api_password": "C3>Jl...",
+          "api_username": "empireadmin",
+          "autorun_command": "",
+          "autorun_data": "",
+          "current_api_token": "ks23jlvdki4fj1j23w39h0h0xcuwjrqilocxd6b5",
+          "default_cert_path": "",
+          "default_delay": 5,
+          "default_jitter": 0.0,
+          "default_lost_limit": 60,
+          "default_port": "8080",
+          "default_profile": "/admin/get.php,/news.asp,/login/process.jsp|Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko",
+          "install_path": "/home/user/Empire/",
+          "ip_blacklist": "",
+          "ip_whitelist": "",
+          "permanent_api_token": "gi5afo3umac6...",
+          "server_version": "Microsoft-IIS/7.5",
+          "stage0_uri": "index.asp",
+          "stage1_uri": "index.jsp",
+          "stage2_uri": "index.php",
+          "staging_key": "m@T%L?VH...",
+          "version": "1.5.0"
+          }
+host: 95.85.40.176:1337
+basePath: /
+schemes:
+ - https
+# Added by API Auto Mocking Plugin
+#host: virtserver.swaggerhub.com
+#basePath: /jhov/Empire-Swagger2.0/1.0.0

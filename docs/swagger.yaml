@@ -32,6 +32,7 @@ tags:
 paths:
   /api/version:
     get:
+      summary: Get the Empire API version.
       tags:
         - Version
       parameters:
@@ -50,6 +51,7 @@ paths:
           description: bad input parameter
   /api/config:
     get:
+      summary: Get the Empire server configuration. 
       tags:
         - Configuration
       parameters:
@@ -68,6 +70,7 @@ paths:
           description: bad input parameter
   /api/admin/login:
     post:
+      summary: Log into the server API and get a session token. 
       tags:
           - Authentication
       parameters:
@@ -95,6 +98,7 @@ paths:
                   $ref: '#/definitions/TokenItem'
   /api/admin/permanenttoken:
     get:
+      summary: Get an API token that does not change on API restart. 
       tags:
         - Admin
       parameters:
@@ -111,6 +115,7 @@ paths:
                   $ref: '#/definitions/TokenItem'
   /api/admin/restart:
     get:
+      summary: Restart the API server.
       tags:
         - Admin
       parameters:
@@ -127,6 +132,7 @@ paths:
                   $ref: '#/definitions/StatusItem'
   /api/admin/shutdown:
     get:
+      summary: Shutdown the API server.
       tags:
         - Admin
       parameters:
@@ -143,6 +149,7 @@ paths:
                   $ref: '#/definitions/StatusItem'
   /api/listeners:
     get:
+      summary: List all the current listeners. 
       tags:
         - Listeners
       parameters:
@@ -159,6 +166,7 @@ paths:
                   $ref: '#/definitions/ListenerItem'
   /api/listeners/{listenerName}:
     get:
+      summary: Returns the listener specifed by the name/id listenerName.
       tags:
           - Listeners
       parameters:
@@ -179,6 +187,7 @@ paths:
                 items:
                   $ref: '#/definitions/ListenerItem'
     post:
+      summary: Create a new listner. 
       tags:
           - Listeners
       parameters:
@@ -216,6 +225,7 @@ paths:
                 items:
                   $ref: '#/definitions/CreateListenerItem'
     delete:
+      summary: Remove a listener. 
       tags:
           - Listeners
       parameters:
@@ -237,6 +247,7 @@ paths:
                   $ref: '#/definitions/StatusItem'
   /api/listeners/all:
       delete:
+        summary: Kill all listeners. 
         tags:
             - Listeners
         parameters:
